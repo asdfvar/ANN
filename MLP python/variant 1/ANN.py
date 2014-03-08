@@ -1,0 +1,74 @@
+import math
+import numpy as np
+class ANN:
+   
+   __Num_Instances = 0
+   
+   LearnRate = 0.4
+   Beta = 1
+   
+   # construct the Artificial Neural Network with one hidden layer
+   def __init__(self,Inputs,HidLayers,Outputs):
+      self.__W1 = np.random.rand(HidLayers+1,Inputs+1)
+      self.__W2 = np.random.rand(Outputs,HidLayers+1)
+      ANN.__Num_Instances += 1
+   
+   @staticmethod
+   def get_Num_Instances():
+      return ANN.__Num_Instances
+   
+   # evaluate a layer
+   def __layer(self, Input, Layer):
+      if Layer == 1:
+         Input[0] = 1
+         return self.__W1.dot(Input)
+      elif Layer == 2:
+         Input[0] = 1
+         return self.__W2.dot(Input)
+   
+   # get the middle (feed forward)
+   def __Mid(self, x):
+      Middle = self.__layer(x, 1)
+      Middle = self.__sigmoid(Middle)
+      return Middle
+      
+   # get the output (feed forward)
+   def Out(self, Input):
+      Input = np.concatenate((np.array([[1]]),Input))
+      Middle = self.__Mid(Input)
+      z = self.__layer(Middle, 2)
+      z = self.__sigmoid(z)
+      return z
+
+   # Back propagation
+   def Back_Prop(self, Input, Target):
+      Output = self.Out(Input)
+      Input = np.concatenate((np.array([[1]]),Input))
+      Middle = self.__Mid(Input)
+      DeltaOut = self.__Out_Delta(Output, Target)
+      DeltaMid = self.__Int_Delta(Middle, self.__W2, DeltaOut)
+      
+      self.__W2 = self.__New_weights(Middle, DeltaOut, self.__W2)
+      self.__W1 = self.__New_weights(Input, DeltaMid, self.__W1)
+
+   # evaluate the activation function
+   def __sigmoid(self, Array):
+      return 1.0/(1.0 + np.exp(-self.Beta*Array))
+
+   # Output back propagation
+   def __Out_Delta(self, Output, Target):
+      return (Target - Output)*Output*(1.0 - Output)
+   
+   # Interior back propagation
+   def __Int_Delta(self, Output, Weight, Forward_Delta):
+      Tmp = Weight.T.dot(Forward_Delta)
+      Tmp = Tmp*(1.0 - Output)
+      return Tmp*(1.0 - Output)*Output
+   
+   # update the weight
+   def __New_weights(self, Input, Delta, Weight):
+      return self.LearnRate*Delta.dot(Input.T) + Weight
+   
+   # get the error
+   def Err(self, Input, Target):
+      return np.linalg.norm(self.Out(Input) - Target)/math.sqrt(len(Target))

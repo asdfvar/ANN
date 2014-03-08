@@ -1,0 +1,24 @@
+OBS = ann.o forward.o training.o
+
+FLAGS = -lm -g -Wall
+OPT = -O3
+
+CC = g++
+EXE = example
+
+all: example
+
+example: $(OBS) Example.cpp
+	$(CC) $(OPT) $(OBS) Example.cpp $(FLAGS) -o $(EXE)
+
+ann.o: ann.cpp
+	$(CC) $(OPT) $(FLAGS) ann.cpp -c
+
+forward.o: forward.cpp
+	$(CC) $(OPT) $(FLAGS) forward.cpp -c
+
+training.o: training.cpp
+	$(CC) $(OPT) $(FLAGS) training.cpp -c
+
+clean:
+	rm $(EXE) $(OBS) 

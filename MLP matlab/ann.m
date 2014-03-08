@@ -1,0 +1,27 @@
+function [weight_1_out,weight_2_out,output,err] = ann(Input,weight_1,weight_2,target_output,learning_rate)
+% artificial neural network
+% be sure to include an extra dimension for the codomain of the first input
+% weights for the bias node. the other layers will take care of this
+% automatically but be sure the cardinality of the matrices agree for each
+% input/output. multiple node layers must be hard coded. default number of
+% hidden layers is whatever i have it set to now.
+
+Input = [-1;Input];
+
+n = size(target_output,2);
+
+out1 = layer(Input,weight_1);
+out1 = sigmoid(out1,1);
+out2 = layer(out1,weight_2);
+out2 = sigmoid(out2,1);
+output = out2;
+
+% back propagation
+err = norm(target_output - out2)/sqrt(n);
+dout = out_error(target_output,out2);
+di = int_error(out1,weight_2,dout);
+
+% weight adjustment
+weight_2_out = new_weights(out1,dout,learning_rate,weight_2);
+weight_1_out = new_weights(Input,di,learning_rate,weight_1);
+end

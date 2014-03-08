@@ -1,0 +1,20 @@
+#!/bin/python
+
+import numpy
+import ANN
+import pylab
+
+Inp = numpy.array([[1],[2],[5]])
+Target = numpy.array([[1],[0]])
+
+NN = ANN.ANN(3,5,2)
+NN.LearnRate = .9
+
+N = 100
+Error = [0 for i in range(N)]
+for i in range(N):
+   NN.Back_Prop(Inp, Target)
+   Error[i] = NN.Err(Inp, Target)
+
+pylab.plot(Error)
+pylab.show()

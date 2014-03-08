@@ -1,0 +1,130 @@
+'''
+Fully connected ANN
+
+Supports any size MLP
+
+activation function used is the sigmoid function
+
+                1
+g(z) =  -------------------
+         1 + exp(-beta * z)
+
+Class variables:
+   LayerSizes
+   N
+   bias
+   beta
+   nu
+
+Class functions:
+   train
+   forward
+'''
+
+import numpy as np
+import random
+
+class ANN:
+
+   #################
+   ## Constructor ##
+   #################
+
+   def __init__(self, LayerSizes, bias = -1, beta = 4, nu = 0.25):
+
+      self.LayerSizes = LayerSizes
+      self.N = len(LayerSizes)
+
+      self.bias =  bias    # the bias term
+      self.beta =  beta    # beta term
+      self.nu   =  nu      # learning rate
+
+      # build the weights
+      w = []
+      for k in range(self.N-1):
+         w.append(np.random.rand(LayerSizes[k+1],LayerSizes[k]))
+      w.append(None)
+      self.w = w
+
+      # build the bias weights
+      v = []
+      for k in range(self.N-1):
+         v.append(np.random.rand(LayerSizes[k+1]))
+      v.append(None)
+      self.v = v
+
+      # build the layer arrays
+      x = []
+      for k in range(self.N):
+         x.append(np.zeros(LayerSizes[k]))
+      self.x = x
+
+      # build the back propagation error arrays
+      d = [None]
+      for k in range(self.N-1):
+         d.append(np.zeros(LayerSizes[k]))
+      self.d = d
+   
+   def load_weights(self, w, v):
+      # Observe how they are initialized above
+      # prior to calling this.
+      self.w = w;
+      self.v = v;
+
+   ######################
+   ## Back propagation ##
+   ######################
+   
+   def train(self, inp, t, Steps):
+      if len(inp) != len(t):
+         print "data sets do not match"
+         return
+
+      Err = np.zeros(Steps)
+      divN = 1.0/len(inp[0])
+
+      for m,step in enumerate(range(Steps)):
+
+         # randomly select a trainning set
+         dSel = random.randrange(len(inp))
+         self.x[0] = inp[dSel]
+         
+         # feed forward
+         y = self.forward(inp[dSel])
+         
+         d0 = t[dSel] - y
+         self.d[-1] = d0
+         
+         # back propagate the error
+         for k in np.arange(-2,-self.N,-1):
+            self.d[k] = np.dot(self.w[k].T, self.d[k+1])* \
+                        (self.beta * self.x[k]*(1 - self.x[k]))
+
+         # update the weights
+         for k in range(self.N-1):
+            dw = np.outer(self.d[k+1], self.x[k])
+            self.w[k] += self.nu*dw
+            dv = self.d[k+1] * self.bias
+            self.v[k] += self.nu*dv
+         
+         Err[m] = sum((t[dSel] - y)**2)*divN
+
+      return Err
+
+   ##################
+   ## Feed forward ##
+   ##################
+
+   def forward(self, inp):
+      self.x[0] = inp
+      for k in range(self.N-1):
+         self.x[k+1] = np.dot(self.w[k],self.x[k]) + self.bias*self.v[k]
+         self.x[k+1] = g(self.x[k+1], self.beta)
+
+      # get the output and output error
+      y = self.x[-1]
+      return y
+
+# sigmoid function
+def g(z, beta):
+   return 1.0/(1.0 + np.exp(-beta*z))
