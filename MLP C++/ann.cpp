@@ -1,7 +1,7 @@
 #include "ann.h"
 #include <stdlib.h>
 #include <time.h>
-#include <math.h>
+#include <cmath>
    
    ann::ann(int *LS, int n, float bs, float bta, float Nu){
       LayerSizes = LS;  // Number of nodes per layer
@@ -10,47 +10,59 @@
       beta = bta;       // Beta term used in the sigmoid function
       nu = Nu;          // Learning rate
       
-      int j,NN;
+      int j;
+      int Nw, Nv, Nx, Nd;
       
       srand (time(NULL));
       
       // Build the weights
-      NN = 0;
+      Nw = 0;
       for (j = 0; j < N-1; j++)
-         NN += LayerSizes[j]*LayerSizes[j+1];
+         Nw += LayerSizes[j]*LayerSizes[j+1];
       
-      w = (float*) calloc(NN, sizeof(float));
+      w = new float[Nw];
       
-      for (j = 0; j < NN; j++)
+      for (j = 0; j < Nw; j++)
          w[j] = ((float) rand()) / ((float) RAND_MAX) * 2.0f - 1.0f;
 
       // Build the bias weights
-      NN = 0;
+      Nv = 0;
       for (j = 1; j < N; j++)
-         NN += LayerSizes[j];
+         Nv += LayerSizes[j];
       
-      v = (float*) calloc(NN, sizeof(float));
+      v = new float[Nv];
       
-      for (j = 0; j < NN; j++)
+      for (j = 0; j < Nv; j++)
          v[j] = ((float) rand()) / ((float) RAND_MAX) * 2.0f - 1.0f;
       
       // Build the layers
-      NN = 0;
+      Nx = 0;
       for (j = 0; j < N; j++)
-         NN += LayerSizes[j];
+         Nx += LayerSizes[j];
       
-      x = (float*) calloc(NN, sizeof(float));
+      x = new float[Nx];
       
       // Build the back propagation error arrays
-      NN = 0;
+      Nd = 0;
       for (j = 0; j < N; j++)
-         NN += LayerSizes[j];
+         Nd += LayerSizes[j];
       
-      d = (float*) calloc(NN, sizeof(float));
+      d = new float[Nd];
 
    }
    
-   ann::~ann(){}
+  /*****************************************************
+   * Destructor
+   *****************************************************/
+
+   ann::~ann(){
+
+      delete[] w;
+      delete[] v;
+      delete[] x;
+      delete[] d;
+
+   }
 
   /*****************************************************
    * Sigmoid function
@@ -65,12 +77,11 @@
       return 1.0f / (1.0f + exp(-beta * z));
    }
    
-   /**************************************************
-    * Apply an MxN matrix to the N dimensional vector
-    * b
+   /******************************************************
+    * Apply an MxN matrix A to the N dimensional vector b
     *
     * y = A*b
-    **************************************************/
+    ******************************************************/
    
    void ann::mult(float *y, float *A, float *b, int M, int N){
    

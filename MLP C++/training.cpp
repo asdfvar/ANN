@@ -1,12 +1,41 @@
-  /*****************************************************
-   * Training
-   *
-   * Train the network with the provided input and output
-   * data sets using the back propagation algorithm over
-   * the user supplied number of steps.
-   *
-   * There are K input and output sets.
-   *****************************************************/
+/*****************************************************
+ * Training
+ *
+ * Train the network with the provided input and output
+ * data sets using the back propagation algorithm over
+ * the supplied number of steps.
+ *
+ * There are K input and output sets.
+ *
+ * Defining:
+ * '*'  - matrix multiplication
+ * '.*' - element wise multiplication (Hadamard multiplication)
+ * 'OP' - outer product
+ * 
+ * Backpropagation of the error starts by subtracting the output
+ * of the NN 'y' from the target desired output 't'.
+ * Delta = t - y                                            -> delta_{-1}
+ *
+ * delta_{-1} is used here to mean the end term
+ *
+ * Then using that "small" difference to update the next "small"
+ * difference one layer back in the NN.
+ * transpose(w_l) * delta_{l+1} .* (beta*x_l .* (1 - x_l))  -> delta_l
+ *
+ * The above is repeated until all "small" differences (delta_l) are computed.
+ *
+ * With the deltas computed, the weights are updated with the terms
+ * delta_{l+1} OP x_l                                       -> Dw_l
+ * delta_{l+1}*bias                                         -> Dv_l
+ *
+ * Using the above terms, the layer weights and bias weights are
+ * updated
+ * w_l + nu*Dw_l                                            -> w_l
+ * v_l + nu*Dv_l                                            -> v_l
+ * 
+ * Reference (with some differences):
+ * http://www.willamette.edu/~gorr/classes/cs449/backprop.html
+ *****************************************************/
 #include "ann.h"
 #include <stdio.h>
 #include <stdlib.h>
