@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <cmath>
-   
+
    ann::ann(int *LS, int n, float bs, float bta, float Nu){
       LayerSizes = LS;  // Number of nodes per layer
       N = n;            // Size of LayerSizes array

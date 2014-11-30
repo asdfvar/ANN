@@ -34,8 +34,23 @@ int main(){
    out = NN.forward(inp);
    
    // Display results
+   std::cout << "Example input result" << std::endl;
    printf("[%f, %f, %f] -> [%f, %f]\n",
           inp[0],inp[1],inp[2],out[0],out[1]);
+
+   /*********************************************************************************/
+
+   // Compare to expected outputs
+
+   std::cout << std::endl
+             << "Comparing training input values to expected outputs" << std::endl;
+
+   for (int i = 0; i < 4; i++) {
+      out = NN.forward(&inpSet[i][0]);
+      printf("[%f, %f, %f] -> [%f, %f] ",
+             inpSet[i][0],inpSet[i][1],inpSet[i][2],out[0],out[1]);
+      printf("expected: [%f, %f]\n", t[i][0], t[i][1]);
+   }
    
    return 0;
 }
