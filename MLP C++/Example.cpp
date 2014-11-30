@@ -13,7 +13,7 @@ int main(){
    float *out;
 
    // Construct the network
-   ann NN(&LayerSizes[0], 5, -1.0f, 2.0f, 0.125f);
+   ann NN(LayerSizes, 5, -1.0f, 2.0f, 0.125f);
    
    // Target inputs (Example)
    float inpSet[4][3] = {{ 5.0, 2.2, 3.1},
@@ -31,7 +31,7 @@ int main(){
    NN.train(&inpSet[0][0], &t[0][0], 4, 1000);
    
    // Run the network on a provided input
-   out = NN.forward(&inp[0]);
+   out = NN.forward(inp);
    
    // Display results
    printf("[%f, %f, %f] -> [%f, %f]\n",
